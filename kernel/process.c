@@ -5,41 +5,34 @@
 #define NULL ((void*)0)
 #endif
 
-// Process table
 static pcb_t process_table[MAX_PROCESSES];
 
-// Global variables - NO STATIC
 pcb_t* current_process = NULL;
 pcb_t* ready_queue = NULL;
 
 static int next_pid = 1;
 static scheduler_type_t current_scheduler = SCHEDULER_ROUND_ROBIN;
 
-// Simple delay function
 static void delay(int cycles) {
     for(int i = 0; i < cycles; i++) { 
         asm volatile ("nop"); 
     }
 }
 
-// Initialize process manager
 void process_init(void) {
     print_string("[PROCESS] Initializing Process Manager...\n");
-    delay(2500000000000); // 5 second delay
+    delay(5000000);
     
-    // Clear process table
     for(int i = 0; i < MAX_PROCESSES; i++) {
         process_table[i].state = PROCESS_NEW;
         process_table[i].pid = 0;
         process_table[i].next = NULL;
     }
     
-    // Create idle process (process 0)
     process_table[0].pid = 0;
     process_table[0].state = PROCESS_READY;
     process_table[0].priority = 0;
     
-    // Manual string copy for "idle"
     const char* idle_name = "idle";
     int i = 0;
     while (idle_name[i] != '\0' && i < 31) {
@@ -53,12 +46,10 @@ void process_init(void) {
     ready_queue->next = ready_queue;
     
     print_string("[PROCESS] Process Manager Ready\n");
-    delay(2500000000000); // 5 second delay
+    delay(5000000);
 }
 
-// Create a new process with process type
 int process_create(void (*entry_point)(void), const char* name, int process_type) {
-    // Find free process slot
     int i;
     for (i = 1; i < MAX_PROCESSES; i++) {
         if (process_table[i].state == PROCESS_NEW || 
@@ -69,18 +60,16 @@ int process_create(void (*entry_point)(void), const char* name, int process_type
     
     if (i >= MAX_PROCESSES) {
         print_string("[PROCESS] Error: Process table full\n");
-        delay(2500000000000); // 5 second delay
+        delay(5000000);
         return -1;
     }
     
-    // Initialize PCB
     pcb_t* pcb = &process_table[i];
     pcb->pid = next_pid++;
     pcb->state = PROCESS_READY;
     pcb->priority = 1;
     pcb->time_slice = 10;
     
-    // Manual string copy for process name
     int j = 0;
     while (name[j] != '\0' && j < 31) {
         pcb->name[j] = name[j];
@@ -88,10 +77,8 @@ int process_create(void (*entry_point)(void), const char* name, int process_type
     }
     pcb->name[j] = '\0';
     
-    // Set entry point
     pcb->eip = (uint32_t)entry_point;
     
-    // Add to ready queue
     pcb_t* last = ready_queue;
     while (last->next != ready_queue) {
         last = last->next;
@@ -99,24 +86,22 @@ int process_create(void (*entry_point)(void), const char* name, int process_type
     pcb->next = ready_queue;
     last->next = pcb;
     
-    // Update ML scheduler with process features
     ml_update_process_features(pcb->pid, process_type);
     
     print_string("[PROCESS] Created process: ");
-    delay(2500000000000); // 2.5 second delay
+    delay(5000000);
     print_string(name);
-    delay(2500000000000); // 2.5 second delay
+    delay(5000000);
     print_string(" (PID: ");
-    delay(2500000000000); // 2.5 second delay
+    delay(5000000);
     print_int(pcb->pid);
-    delay(2500000000000); // 2.5 second delay
+    delay(5000000);
     print_string(")\n");
-    delay(2500000000000); // 5 second delay
+    delay(5000000);
     
     return pcb->pid;
 }
 
-// Simple round-robin scheduler
 void process_schedule(void) {
     if (ready_queue == NULL) return;
     
@@ -131,24 +116,22 @@ void process_schedule(void) {
         current_process = next;
         
         print_string("[RR] Switched to: ");
-        delay(2500000000000); // 2.5 second delay
+        delay(5000000);
         print_string(current_process->name);
-        delay(2500000000000); // 2.5 second delay
+        delay(5000000);
         print_string(" (PID: ");
-        delay(2500000000000); // 2.5 second delay
+        delay(5000000);
         print_int(current_process->pid);
-        delay(2500000000000); // 2.5 second delay
+        delay(5000000);
         print_string(")\n");
-        delay(2500000000000); // 5 second delay
+        delay(5000000);
     }
 }
 
-// Get current process
 pcb_t* get_current_process(void) {
     return current_process;
 }
 
-// Yield CPU to next process
 void process_yield(void) {
     if(current_scheduler == SCHEDULER_ML_BASED) {
         ml_schedule();
@@ -157,7 +140,6 @@ void process_yield(void) {
     }
 }
 
-// Terminate current process
 void process_exit(void) {
     current_process->state = PROCESS_TERMINATED;
     
@@ -172,53 +154,51 @@ void process_exit(void) {
     }
     
     print_string("[PROCESS] Process terminated: ");
-    delay(2500000000000); // 2.5 second delay
+    delay(5000000);
     print_string(current_process->name);
-    delay(2500000000000); // 2.5 second delay
+    delay(5000000);
     print_string("\n");
-    delay(2500000000000); // 5 second delay
+    delay(5000000);
     
     process_yield();
 }
 
-// Set scheduler type
 void set_scheduler_type(scheduler_type_t type) {
     current_scheduler = type;
     print_string("[PROCESS] Scheduler set to: ");
-    delay(2500000000000); // 2.5 second delay
+    delay(5000000);
     print_string(type == SCHEDULER_ROUND_ROBIN ? "Round Robin" : "ML Based");
-    delay(2500000000000); // 2.5 second delay
+    delay(5000000);
     print_string("\n");
-    delay(2500000000000); // 5 second delay
+    delay(5000000);
 }
 
-// Print process table
 void print_process_table(void) {
     print_string("\n=== Process Table ===\n");
-    delay(2500000000000); // 5 second delay
+    delay(5000000);
     print_string("Slot PID State Name\n");
-    delay(2500000000000); // 5 second delay
+    delay(5000000);
     
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (process_table[i].state != PROCESS_NEW) {
             print_int(i);
-            delay(2500000000000); // 2.5 second delay
+            delay(5000000);
             print_string(" ");
-            delay(2500000000000); // 2.5 second delay
+            delay(5000000);
             print_int(process_table[i].pid);
-            delay(2500000000000); // 2.5 second delay
+            delay(5000000);
             print_string(" ");
-            delay(2500000000000); // 2.5 second delay
+            delay(5000000);
             print_int(process_table[i].state);
-            delay(2500000000000); // 2.5 second delay
+            delay(5000000);
             print_string(" ");
-            delay(2500000000000); // 2.5 second delay
+            delay(5000000);
             print_string(process_table[i].name);
-            delay(2500000000000); // 2.5 second delay
+            delay(5000000);
             print_string("\n");
-            delay(500000000000000); // 5 second delay
+            delay(5000000);
         }
     }
     print_string("====================\n");
-    delay(5000000); // 5 second delay
+    delay(5000000);
 }

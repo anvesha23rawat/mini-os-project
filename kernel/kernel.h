@@ -3,14 +3,11 @@
 
 #include <stdint.h>
 
-// Define size_t if we're in freestanding environment
 typedef unsigned int size_t;
 
-// VGA text mode constants
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
 
-// Color constants
 enum vga_color {
     COLOR_BLACK = 0,
     COLOR_BLUE = 1,
@@ -42,12 +39,8 @@ void print_float(float num);
 void clear_screen(void);
 void terminal_initialize(void);
 void terminal_setcolor(uint8_t color);
-//size_t strlen(const char* str);
 void memcpy(void* dest, const void* src, size_t n);
 void memset(void* dest, int val, size_t n);
-//void strcpy(char* dest, const char* src);
-//int strcmp(const char* s1, const char* s2);
-
 // Demo processes
 void init_demo_processes(void);
 
@@ -56,7 +49,5 @@ void ml_scheduler_init(void);
 void ml_schedule(void);
 void ml_update_process_features(int pid, int process_type);
 void print_ml_scheduler_stats(void);
-
-// Statistics functions are now in stats.h - REMOVED from here
 
 #endif

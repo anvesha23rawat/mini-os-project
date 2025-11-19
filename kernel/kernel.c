@@ -13,8 +13,6 @@ int terminal_row;
 int terminal_col;
 uint8_t terminal_color;
 
-// REMOVED: Duplicate process functions (they're in demo_processes.c)
-
 void terminal_initialize(void) {
     terminal_row = 0;
     terminal_col = 0;
@@ -50,7 +48,6 @@ void print_char(char c) {
     
     // Proper scroll when at bottom
     if (terminal_row >= VGA_HEIGHT) {
-        // Move all lines up by one
         for (int y = 0; y < VGA_HEIGHT-1; y++) {
             for (int x = 0; x < VGA_WIDTH; x++) {
                 vga_buffer[y * VGA_WIDTH + x] = vga_buffer[(y+1) * VGA_WIDTH + x];
@@ -131,90 +128,12 @@ void memset(void* dest, int val, size_t n) {
     }
 }
 
-/*Kernel Main Function - ML SCHEDULER + FILE SYSTEM DEMO */
-/*
-void kernel_main(void) {
-    terminal_initialize();
-
-    print_string("Mini OS with ML Scheduler & File System\n");
-    print_string("========================================\n\n");
-
-    // Initialize systems
-    process_init();
-    ml_scheduler_init();
-    fs_init();  // Initialize file system
-    
-    // Create demo processes
-    init_demo_processes();
-
-    // Print initial predictions
-    print_process_table();
-    print_ml_scheduler_stats();
-
-    // Show file system contents
-    fs_list();
-
-    // Set to ML scheduler
-    set_scheduler_type(SCHEDULER_ML_BASED);
-    
-    print_string("\n=== ML Scheduler Active ===\n");
-    print_string("ML Predictions:\n");
-    print_string("- CPU Process: Burst=8, Priority=0.12\n");
-    print_string("- IO Process:  Burst=4, Priority=0.25 (HIGHEST)\n");
-    print_string("- ML Process:  Burst=6, Priority=0.16\n\n");
-
-    // Demo file operations
-    print_string("=== File System Demo ===\n");
-    
-    // Read and display demo files
-    char buffer[256];
-    if(fs_read("readme.txt", buffer) > 0) {
-        print_string("readme.txt: ");
-        print_string(buffer);
-        print_string("\n");
-    }
-    
-    if(fs_read("ml_info.txt", buffer) > 0) {
-        print_string("ml_info.txt: ");
-        print_string(buffer);
-        print_string("\n");
-    }
-    
-    // Create a new file
-    fs_create("demo.txt");
-    fs_write("demo.txt", "This file was created by ML OS!");
-    
-    // Show updated file list
-    fs_list();
-
-    // Show a few scheduling decisions
-    print_string("\n=== ML Scheduling Demo ===\n");
-    for(int i = 0; i < 3; i++) {
-        ml_schedule();
-        print_string("Running: ");
-        print_string(current_process->name);
-        print_string("\n");
-        
-        for(int j = 0; j < 2000000; j++);
-    }
-    
-    print_string("\n✅ SYSTEM READY: ML Scheduler + File System\n");
-
-    // MOVE shell_start() HERE - BEFORE infinite loop
-    shell_start();  // NOW IT WILL BE CALLED
-
-    // Infinite loop at the end
-    while(1) {
-        asm volatile ("hlt");
-    }
-}
-*/
 
 void kernel_main(void) {
     terminal_initialize();
 
-    print_string("Mini OS: Bootloader+Kernel+Process+ML+FS\n");
-    print_string("=========================================\n\n");
+    print_string("Mini OS: Bootloader+Kernel+Process+ML+FS+Shell\n");
+    print_string("===============================================\n\n");
 
     // Initialize quietly
     process_init();

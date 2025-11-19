@@ -1,6 +1,6 @@
 #include "process.h"
 #include "kernel.h"
-#include "fs.h"  // Add this line for file system functions
+#include "fs.h" 
 
 // Demo process functions
 void cpu_process(void) {
@@ -26,25 +26,20 @@ void ml_process(void) {
         process_yield();
     }
 }
-
-// File System Demo Function - CORRECTED
 void demo_file_system(void) {
     print_string("\n=== File System Demo ===\n");
     
-    // Step 1: List all files - FIXED: fs_list_files -> fs_list
     print_string("[FS] Listing all files:\n");
-    fs_list();  // CHANGED THIS LINE
+    fs_list(); 
     
-    // Step 2: Read readme.txt file - FIXED: Only 2 arguments
     char buffer[100];
-    int bytes_read = fs_read("readme.txt", buffer);  // CORRECT - 2 arguments
+    int bytes_read = fs_read("readme.txt", buffer); 
     if(bytes_read > 0) {
         print_string("[FS] Read from readme.txt: ");
         print_string(buffer);
         print_string("\n");
     }
     
-    // Step 3: Read ml_info.txt file - FIXED: Only 2 arguments  
     bytes_read = fs_read("ml_info.txt", buffer);  // CORRECT - 2 arguments
     if(bytes_read > 0) {
         print_string("[FS] Read from ml_info.txt: ");
@@ -59,7 +54,7 @@ void demo_file_system(void) {
     
     // Step 5: List files again to show new file - FIXED: fs_list_files -> fs_list
     print_string("[FS] Files after creating test.txt:\n");
-    fs_list();  // CHANGED THIS LINE
+    fs_list(); 
     
     print_string("==========================\n\n");
 }
@@ -71,7 +66,7 @@ void init_demo_processes(void) {
     // Step 1: First run file system demo
     demo_file_system();
     
-    // Step 2: Then create processes
+    // Step 2:create processes
     int pid1 = process_create(cpu_process, "CPU_Process", 0);
     ml_update_process_features(pid1, 0);
     
